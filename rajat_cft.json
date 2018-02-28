@@ -1,0 +1,29 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Resources": {
+        "RajatLambda": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+				"Code": {
+            		"S3Bucket": "webquant-akshay",
+					"S3Key": "getuserdetails.zip"	
+       				},       			
+       			"Handler": "getuserdetails.lambda_handler",
+       			"Role": "arn:aws:iam::488599217855:role/usecase2",
+       			"Runtime": "python3.6",
+			"FunctionName": "getuserdetailstrialfinal",
+       			"Timeout": 120				
+		   }				
+
+ },
+
+   "LambadaTrigger" : {
+         "Type": "Custom::lambdatrigger",
+	 "DependsOn": "RajatLambda",
+         "Version" : "1.0",
+         "Properties" : {
+            "ServiceToken": { "Fn::GetAtt" : [ "RajatLambda", "Arn" ] }
+         }	
+      }    
+   }
+}

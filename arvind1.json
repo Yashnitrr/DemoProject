@@ -1,0 +1,28 @@
+{
+    "Resources": {
+        "calculations": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+				"Code": {
+            		"S3Bucket": "usecaasecalculations",
+					"S3Key": "finalresult.zip"
+       				},
+
+       			"Handler": "finalresult.lambda_handler",
+       			"Role": "arn:aws:iam::488599217855:role/usecaserole",
+            "FunctionName":"FinalUpdatedata",
+       			"Runtime": "python3.6",
+       			"Timeout": 60
+				}
+
+					},
+
+		"TestLambdaFunction": {
+  "Type": "Custom::LambdaCallout",
+  "Properties": {
+    "ServiceToken": {"Fn::GetAtt": ["calculations","Arn"]}
+	}
+}
+	}
+
+}

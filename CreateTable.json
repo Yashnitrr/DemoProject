@@ -1,0 +1,78 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Resources": {
+    "Bidder": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "email",
+            "AttributeType": "S"
+          }
+        ],	
+        "KeySchema": [
+          {
+            "AttributeName": "email",
+            "KeyType": "HASH"
+          }
+        ],
+	"ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            },
+        "TableName": "Bidder"
+        
+      }
+    },
+
+    "MatchFixture": {
+      "Type": "AWS::DynamoDB::Table",
+      "DependsOn" : "Bidder",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "match_id",
+            "AttributeType": "N"
+          }
+        ],	
+        "KeySchema": [
+          {
+            "AttributeName": "match_id",
+            "KeyType": "HASH"
+          }
+        ],
+	"ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            },
+        "TableName": "Match_Fixture"      	  
+      }
+    },
+
+    "YashLambda": {
+            "Type": "AWS::Lambda::Function",
+	    "DependsOn" : "MatchFixture",
+            "Properties": {
+				"Code": {
+            		"S3Bucket": "webquant-akshay",
+					"S3Key": "sendmail1.zip"	
+       				},       			
+       			"Handler": "sendmail1.lambda_handler",
+       			"Role": "arn:aws:iam::488599217855:role/service-role/Yash-lambda-role",
+       			"Runtime": "python3.6",
+			"FunctionName": "RegistrationLink",
+       			"Timeout": 120				
+		   }				
+
+ },
+
+   "TriggerLambada" : {
+         "Type": "Custom::lambda",
+	 "DependsOn": "YashLambda",
+         "Version" : "1.0",
+         "Properties" : {
+            "ServiceToken": { "Fn::GetAtt" : [ "YashLambda", "Arn" ] }
+         }	
+      }    
+   }
+}   
